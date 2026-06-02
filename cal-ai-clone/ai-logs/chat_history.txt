@@ -1,0 +1,41 @@
+--------------------------------------------------
+THREAD 1: CORE ARCHITECTURE & SCREEN GENERATION
+--------------------------------------------------
+USER PROMPT:
+Please build a highly polished, premium mobile web-app clone of "Cal AI" inside this folder. Create an index.html file that includes Tailwind CSS via CDN so it works standalone out of the box. Use a modern, dark health aesthetic: background deep slate (#0F172A), crisp white typography, and vibrant emerald green accents (#10B981) for targets and tracking indicators.
+
+Render the entire application inside a visually striking, centered mobile device frame viewport container on the screen so it feels like a native phone interface.
+
+Implement full state-driven JavaScript tabs at the bottom to transition seamlessly between these screens:
+1. Dashboard / Home Screen
+2. AI Camera Scan & Logging Flow
+3. Analytics Trends Screen
+4. Settings / Profile Screen
+
+AI RESPONSE:
+Implemented
+Created index.html (standalone) with Tailwind CSS via CDN, deep-slate background (#0F172A), crisp white typography, and emerald accents (#10B981).
+Rendered the app inside a centered mobile device frame with a premium dark “health” aesthetic.
+Bottom tab navigation (state-driven JS) with seamless transitions between: Dashboard/Home, AI Camera Scan flow, Analytics, and Settings/Profile.
+
+
+-----------------------------------------------------
+THREAD 2: REFACTORING FOR DYNAMIC IMAGE/TEXT LOGGING
+-----------------------------------------------------
+USER PROMPT:
+Update the index.html file to make the AI Food Scan process completely dynamic instead of hardcoded to Avocado Toast. Read the filename or accept a text description input, then algorithmically compute realistic calorie/macro combinations matching that food input and append them dynamically to the dashboard state.
+The PROMPT:
+Update the index.html file to make the AI Food Scan process completely dynamic instead of hardcoded to Avocado Toast. 
+
+Modify the image uploading/simulation workflow with these changes:
+1. When a user uploads or selects an image file, read the actual file name (e.g., "pizza.jpg" or "salad.png"). Extract the name of the food from the file name.
+2. In the "Simulate Photo Scan" screen, add a clean text input field right below the preview called: "Confirm what's on your plate: (e.g., Grilled Chicken Salad)". If the user types a custom meal name here, prioritize this input over the filename.
+3. Update the 3-second JavaScript calculation logic: When the scan finishes, programmatically generate a realistic, randomized but sensible nutritional profile based on the detected or typed food name. For example:
+   - If the text contains "pizza": show ~280 kcal per slice, higher carbs/fats.
+   - If the text contains "salad" or "apple" or "vegetable": show low calories (~80-150 kcal), high fiber/carbs, low fat.
+   - If the text contains "chicken" or "egg" or "protein": show ~300-400 kcal, high protein.
+   - For any other custom word typed by the user, dynamically calculate a realistic calorie count (between 200 and 600 kcal) and dynamically generate matching Protein, Carbs, and Fat numbers that mathematically equal that calorie total (Protein*4 + Carbs*4 + Fat*9 = Total Calories).
+4. When the user clicks "Confirm & Log", ensure that specific food name, its newly generated dynamic calories, and its macros are appended to the Dashboard timeline and added to the progress rings correctly.
+
+AI RESPONSE:
+Refactored index.html. Replaced static simulation values with a dynamic parser engine that extracts keywords from user input fields or file names. Implemented conditional macro generation formulas to ensure math alignment across custom meal additions.

@@ -1,0 +1,1210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cal AI — Mobile Web Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#0F172A" />
+    <style>
+      :root {
+        --bg: #0f172a;
+        --emerald: #10b981;
+      }
+      /* smoothen text on dark */
+      html,
+      body {
+        height: 100%;
+        background: var(--bg);
+        color: #fff;
+      }
+      /* subtle premium grain */
+      .grain::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+        opacity: 0.15;
+        pointer-events: none;
+        border-radius: inherit;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-40%);
+        }
+        100% {
+          transform: translateX(140%);
+        }
+      }
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35);
+        }
+        50% {
+          box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+        }
+      }
+      @keyframes scan {
+        0% {
+          transform: translateY(-30%);
+          opacity: 0.0;
+        }
+        10% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(140%);
+          opacity: 0.0;
+        }
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              slateDeep: "#0F172A",
+              emeraldAcc: "#10B981",
+            },
+            fontFamily: {
+              sans: [
+                "ui-sans-serif",
+                "system-ui",
+                "-apple-system",
+                "Segoe UI",
+                "Roboto",
+                "Inter",
+                "Helvetica Neue",
+                "Arial",
+                "Noto Sans",
+                "Apple Color Emoji",
+                "Segoe UI Emoji",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="min-h-screen bg-slateDeep font-sans antialiased">
+    <!-- Background -->
+    <div class="pointer-events-none fixed inset-0">
+      <div class="absolute inset-0 bg-[radial-gradient(900px_circle_at_50%_-20%,rgba(16,185,129,0.18),transparent_60%),radial-gradient(800px_circle_at_80%_10%,rgba(59,130,246,0.12),transparent_55%),radial-gradient(900px_circle_at_10%_30%,rgba(244,63,94,0.10),transparent_55%)]"></div>
+      <div class="absolute inset-0 opacity-60 [background:linear-gradient(to_bottom,rgba(15,23,42,0.4),rgba(15,23,42,0.92))]"></div>
+    </div>
+
+    <main class="relative mx-auto flex min-h-screen w-full items-center justify-center px-4 py-10">
+      <!-- Device frame -->
+      <section
+        class="grain relative w-full max-w-[420px] overflow-hidden rounded-[36px] border border-white/10 bg-[#0B1224]/70 shadow-[0_30px_90px_rgba(0,0,0,0.6)] backdrop-blur-xl"
+      >
+        <!-- Phone chrome -->
+        <div class="absolute inset-x-0 top-0 z-30 flex items-center justify-center pt-4">
+          <div class="h-6 w-36 rounded-full bg-black/30 ring-1 ring-white/10"></div>
+        </div>
+
+        <div class="relative z-10 flex h-[780px] flex-col">
+          <!-- Header -->
+          <header class="px-5 pt-10">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs tracking-[0.18em] text-white/60">CAL AI</div>
+                <div class="mt-1 text-xl font-semibold leading-tight">
+                  <span id="headerTitle">Dashboard</span>
+                </div>
+              </div>
+              <button
+                id="quickScanBtn"
+                class="group active:scale-95 transition transform rounded-2xl bg-emeraldAcc/15 px-3 py-2 ring-1 ring-emeraldAcc/30 hover:bg-emeraldAcc/20"
+              >
+                <div class="flex items-center gap-2">
+                  <span
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emeraldAcc text-slateDeep shadow-[0_10px_30px_rgba(16,185,129,0.35)]"
+                  >
+                    <!-- camera icon -->
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-95">
+                      <path
+                        d="M9 7l1.5-2h3L15 7h3a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3h3z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                      />
+                    </svg>
+                  </span>
+                  <div class="text-left">
+                    <div class="text-[11px] text-white/70 leading-4">Scan Meal</div>
+                    <div class="text-sm font-semibold">AI Camera</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </header>
+
+          <!-- Content -->
+          <div id="screenHost" class="relative mt-4 flex-1 overflow-hidden">
+            <!-- Screens stack; we animate by translating -->
+            <div id="screenStack" class="absolute inset-0 flex w-[400%] h-full transition-transform duration-300 ease-out">
+              <!-- Dashboard -->
+              <section class="w-1/4 h-full px-5 pb-28 overflow-y-auto no-scrollbar">
+                <div class="mt-2 grid grid-cols-12 gap-4">
+                  <!-- Ring tracker -->
+                  <div class="col-span-12 rounded-3xl border border-white/10 bg-white/5 p-4">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <div class="text-sm text-white/70">Calories Remaining</div>
+                        <div class="mt-1 text-xs text-white/50">
+                          Target: <span id="txtTarget">2,000</span> —
+                          Food: <span id="txtFood">1,200</span> + Exercise:
+                          <span id="txtExercise">300</span>
+                        </div>
+                      </div>
+                      <div class="rounded-2xl bg-black/20 px-3 py-2 ring-1 ring-white/10">
+                        <div class="text-[10px] text-white/60">Today</div>
+                        <div class="text-sm font-semibold" id="txtDate"></div>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between gap-4">
+                      <div class="relative h-40 w-40 shrink-0">
+                        <svg viewBox="0 0 120 120" class="h-full w-full">
+                          <defs>
+                            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                              <stop offset="0%" stop-color="#10B981" stop-opacity="1" />
+                              <stop offset="100%" stop-color="#34D399" stop-opacity="1" />
+                            </linearGradient>
+                            <filter id="softGlow">
+                              <feGaussianBlur stdDeviation="2.6" result="blur" />
+                              <feColorMatrix
+                                in="blur"
+                                type="matrix"
+                                values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 .9 0"
+                                result="glow"
+                              />
+                              <feMerge>
+                                <feMergeNode in="glow" />
+                                <feMergeNode in="SourceGraphic" />
+                              </feMerge>
+                            </filter>
+                          </defs>
+
+                          <circle cx="60" cy="60" r="46" stroke="rgba(255,255,255,0.10)" stroke-width="10" fill="none" />
+                          <circle
+                            id="ringArc"
+                            cx="60"
+                            cy="60"
+                            r="46"
+                            stroke="url(#ringGrad)"
+                            stroke-width="10"
+                            stroke-linecap="round"
+                            fill="none"
+                            stroke-dasharray="289"
+                            stroke-dashoffset="92"
+                            filter="url(#softGlow)"
+                            transform="rotate(-90 60 60)"
+                          />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                          <div class="text-3xl font-semibold leading-none" id="txtRemaining">1,100</div>
+                          <div class="mt-1 text-xs text-white/60">kcal left</div>
+                        </div>
+                      </div>
+
+                      <div class="flex-1 space-y-3">
+                        <div class="rounded-2xl bg-black/20 p-3 ring-1 ring-white/10">
+                          <div class="flex items-center justify-between text-xs text-white/60">
+                            <span>Calories Progress</span>
+                            <span id="txtProgressPct">55%</span>
+                          </div>
+                          <div class="mt-2 h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
+                            <div id="barCalories" class="h-full w-[55%] rounded-full bg-emeraldAcc"></div>
+                          </div>
+                          <div class="mt-2 text-[11px] text-white/50">
+                            Logged food today: <span id="txtFood2">1,200</span> kcal
+                          </div>
+                        </div>
+
+                        <button
+                          id="dashAddBtn"
+                          class="active:scale-95 transition transform w-full rounded-2xl bg-emeraldAcc px-4 py-3 text-slateDeep font-semibold shadow-[0_14px_40px_rgba(16,185,129,0.35)]"
+                          style="animation: pulseGlow 2.8s ease-in-out infinite"
+                        >
+                          + Log a New Meal
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Macros -->
+                  <div class="col-span-12 rounded-3xl border border-white/10 bg-white/5 p-4">
+                    <div class="flex items-center justify-between">
+                      <div class="text-sm font-semibold">Macronutrients</div>
+                      <div class="text-xs text-white/60">Daily targets</div>
+                    </div>
+
+                    <div class="mt-4 space-y-3">
+                      <div>
+                        <div class="flex items-center justify-between text-xs text-white/70">
+                          <span>Protein</span>
+                          <span><span id="pVal">95</span>/<span id="pTgt">140</span> g</span>
+                        </div>
+                        <div class="mt-2 h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
+                          <div id="pBar" class="h-full rounded-full bg-emeraldAcc/90 w-[40%]"></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center justify-between text-xs text-white/70">
+                          <span>Carbs</span>
+                          <span><span id="cVal">135</span>/<span id="cTgt">220</span> g</span>
+                        </div>
+                        <div class="mt-2 h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
+                          <div id="cBar" class="h-full rounded-full bg-emeraldAcc/75 w-[50%]"></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="flex items-center justify-between text-xs text-white/70">
+                          <span>Fats</span>
+                          <span><span id="fVal">42</span>/<span id="fTgt">70</span> g</span>
+                        </div>
+                        <div class="mt-2 h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
+                          <div id="fBar" class="h-full rounded-full bg-emeraldAcc/65 w-[60%]"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Meals -->
+                  <div class="col-span-12 rounded-3xl border border-white/10 bg-white/5 p-4">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <div class="text-sm font-semibold">Today’s Meals</div>
+                        <div class="text-xs text-white/60">Timeline • tap to view details</div>
+                      </div>
+                      <button
+                        id="mealsPlusBtn"
+                        class="active:scale-95 transition transform inline-flex items-center justify-center h-11 w-11 rounded-2xl bg-emeraldAcc text-slateDeep shadow-[0_14px_40px_rgba(16,185,129,0.35)]"
+                        aria-label="Add meal"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div id="mealsList" class="mt-4 space-y-3"></div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Scan -->
+              <section class="w-1/4 h-full px-5 pb-28 overflow-y-auto no-scrollbar">
+                <div class="mt-2 rounded-3xl border border-white/10 bg-white/5 p-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">AI Camera Scan</div>
+                      <div class="text-xs text-white/60">Simulated capture + analysis</div>
+                    </div>
+                    <button
+                      id="scanBackToDash"
+                      class="active:scale-95 transition transform rounded-2xl bg-black/30 px-3 py-2 ring-1 ring-white/10 text-sm font-semibold"
+                    >
+                      Back
+                    </button>
+                  </div>
+
+                  <div id="cameraStage" class="mt-4">
+                    <div class="relative overflow-hidden rounded-3xl bg-black/50 ring-1 ring-white/10">
+                      <div class="aspect-[9/16] w-full">
+                        <!-- camera grid -->
+                        <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.10)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.10)_1px,transparent_1px)] [background-size:44px_44px] opacity-30"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(600px_circle_at_30%_20%,rgba(16,185,129,0.22),transparent_55%)]"></div>
+
+                        <!-- corner guides -->
+                        <div class="absolute inset-0">
+                          <div class="absolute left-5 top-5 h-10 w-10 rounded-lg border-l-2 border-t-2 border-emeraldAcc/70"></div>
+                          <div class="absolute right-5 top-5 h-10 w-10 rounded-lg border-r-2 border-t-2 border-emeraldAcc/70"></div>
+                          <div class="absolute left-5 bottom-5 h-10 w-10 rounded-lg border-l-2 border-b-2 border-emeraldAcc/70"></div>
+                          <div class="absolute right-5 bottom-5 h-10 w-10 rounded-lg border-r-2 border-b-2 border-emeraldAcc/70"></div>
+                        </div>
+
+                        <div class="absolute bottom-6 left-0 right-0 flex items-center justify-center">
+                          <div class="rounded-2xl bg-black/40 px-3 py-1.5 ring-1 ring-white/10 text-xs text-white/70">
+                            Frame your meal • steady hands
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 rounded-3xl bg-black/25 p-4 ring-1 ring-white/10">
+                      <div class="flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                          <div class="text-xs text-white/70">Upload / select an image</div>
+                          <div id="scanFileName" class="mt-1 truncate text-sm font-semibold text-white/90">No file selected</div>
+                        </div>
+                        <div class="shrink-0">
+                          <input id="scanFileInput" type="file" accept="image/*" class="hidden" />
+                          <button
+                            id="scanChooseBtn"
+                            class="active:scale-95 transition transform rounded-2xl bg-white/5 px-4 py-3 text-sm font-semibold ring-1 ring-white/10 hover:bg-white/10"
+                            type="button"
+                          >
+                            Choose Photo
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="mt-3 overflow-hidden rounded-2xl bg-black/35 ring-1 ring-white/10">
+                        <div class="relative aspect-[16/9] w-full">
+                          <img id="scanPreviewImg" alt="Selected meal preview" class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300" />
+                          <div id="scanPreviewEmpty" class="absolute inset-0 flex items-center justify-center text-xs text-white/55">
+                            Preview will appear here
+                          </div>
+                          <div class="absolute inset-0 bg-[radial-gradient(500px_circle_at_30%_20%,rgba(16,185,129,0.20),transparent_55%)]"></div>
+                        </div>
+                      </div>
+
+                      <label class="mt-4 block">
+                        <div class="text-xs text-white/70">
+                          Confirm what's on your plate:
+                          <span class="text-white/45">(e.g., Grilled Chicken Salad)</span>
+                        </div>
+                        <input
+                          id="scanMealNameInput"
+                          type="text"
+                          placeholder="Type meal name (optional)"
+                          class="mt-2 w-full rounded-2xl bg-black/30 px-4 py-3 text-white ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-emeraldAcc/60"
+                        />
+                        <div id="scanDetectedHint" class="mt-2 text-[11px] text-white/55"></div>
+                      </label>
+                    </div>
+
+                    <button
+                      id="simulateScanBtn"
+                      class="mt-4 active:scale-95 transition transform w-full rounded-2xl bg-emeraldAcc px-4 py-3 text-slateDeep font-semibold shadow-[0_14px_40px_rgba(16,185,129,0.35)]"
+                    >
+                      Simulate Photo Scan
+                    </button>
+                  </div>
+
+                  <div id="scanStage" class="mt-4 hidden">
+                    <div class="relative overflow-hidden rounded-3xl bg-black/55 ring-1 ring-white/10">
+                      <div class="aspect-[9/16] w-full">
+                        <div class="absolute inset-0 bg-[radial-gradient(600px_circle_at_50%_20%,rgba(16,185,129,0.25),transparent_60%)]"></div>
+                        <div class="absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.10),transparent)] opacity-40"
+                             style="animation: shimmer 1.2s linear infinite;"></div>
+                        <div
+                          id="laser"
+                          class="absolute left-0 right-0 h-1.5 bg-emeraldAcc/90 blur-[0.4px] shadow-[0_0_30px_rgba(16,185,129,0.7)]"
+                          style="top: 10%; animation: scan 1.4s ease-in-out infinite;"
+                        ></div>
+                        <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:52px_52px] opacity-25"></div>
+
+                        <div class="absolute bottom-6 left-0 right-0 flex flex-col items-center gap-2 px-5">
+                          <div class="rounded-2xl bg-black/55 px-3 py-1.5 ring-1 ring-white/10 text-xs text-white/70">
+                            Neural Vision • Premium Scan
+                          </div>
+                          <div class="text-sm font-semibold text-white" id="scanText">Analyzing food geometry...</div>
+                          <div class="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                            <div id="scanProg" class="h-full w-0 rounded-full bg-emeraldAcc transition-[width] duration-300"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="resultStage" class="mt-4 hidden">
+                    <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <div class="text-xs tracking-[0.18em] text-emeraldAcc/90">AI ANALYSIS RESULT</div>
+                          <div id="aiMealTitle" class="mt-1 text-lg font-semibold">—</div>
+                          <div id="aiMeta" class="mt-1 text-xs text-white/60">Confidence: 0.92 • Portion: 1 serving</div>
+                        </div>
+                        <div class="rounded-2xl bg-emeraldAcc/15 px-3 py-2 ring-1 ring-emeraldAcc/30">
+                          <div class="text-[10px] text-white/70">Total</div>
+                          <div class="text-base font-semibold text-white"><span id="aiKcal">380</span> kcal</div>
+                        </div>
+                      </div>
+
+                      <div class="mt-4 overflow-hidden rounded-2xl ring-1 ring-white/10">
+                        <table class="w-full text-left text-sm">
+                          <thead class="bg-black/25 text-xs text-white/70">
+                            <tr>
+                              <th class="px-3 py-2 font-semibold">Macro</th>
+                              <th class="px-3 py-2 font-semibold">Amount</th>
+                              <th class="px-3 py-2 font-semibold">Calories</th>
+                            </tr>
+                          </thead>
+                          <tbody class="divide-y divide-white/10">
+                            <tr class="bg-white/5">
+                              <td class="px-3 py-2">Protein</td>
+                              <td class="px-3 py-2"><span id="aiP">18</span> g</td>
+                              <td class="px-3 py-2 text-white/80"><span id="aiPkcal">72</span></td>
+                            </tr>
+                            <tr class="bg-white/5">
+                              <td class="px-3 py-2">Carbs</td>
+                              <td class="px-3 py-2"><span id="aiC">34</span> g</td>
+                              <td class="px-3 py-2 text-white/80"><span id="aiCkcal">136</span></td>
+                            </tr>
+                            <tr class="bg-white/5">
+                              <td class="px-3 py-2">Fats</td>
+                              <td class="px-3 py-2"><span id="aiF">20</span> g</td>
+                              <td class="px-3 py-2 text-white/80"><span id="aiFkcal">180</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <button
+                        id="confirmLogBtn"
+                        class="mt-4 active:scale-95 transition transform w-full rounded-2xl bg-emeraldAcc px-4 py-3 text-slateDeep font-semibold shadow-[0_14px_40px_rgba(16,185,129,0.35)]"
+                      >
+                        Confirm &amp; Log to Dashboard
+                      </button>
+                      <button
+                        id="scanAgainBtn"
+                        class="mt-3 active:scale-95 transition transform w-full rounded-2xl bg-black/35 px-4 py-3 text-white font-semibold ring-1 ring-white/10"
+                      >
+                        Scan Again
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Analytics -->
+              <section class="w-1/4 h-full px-5 pb-28 overflow-y-auto no-scrollbar">
+                <div class="mt-2 rounded-3xl border border-white/10 bg-white/5 p-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">Trends</div>
+                      <div class="text-xs text-white/60">Weekly calories vs target</div>
+                    </div>
+                    <div class="rounded-2xl bg-emeraldAcc/15 px-3 py-2 ring-1 ring-emeraldAcc/30">
+                      <div class="text-[10px] text-white/70">Streak</div>
+                      <div class="text-sm font-semibold">7 Day Streak! 🔥</div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 rounded-3xl bg-black/25 p-4 ring-1 ring-white/10">
+                    <div class="flex items-center justify-between text-xs text-white/60">
+                      <span>Last 7 days</span>
+                      <span>Target: <span id="anaTarget">2,000</span> kcal</span>
+                    </div>
+
+                    <div class="relative mt-4 h-44">
+                      <!-- target line -->
+                      <div id="targetLine" class="absolute left-0 right-0 h-px bg-emeraldAcc/60" style="top: 45%"></div>
+                      <div class="absolute -top-3 right-0 text-[10px] text-emeraldAcc/80">target</div>
+
+                      <div id="bars" class="absolute inset-0 flex items-end gap-2"></div>
+                    </div>
+
+                    <div class="mt-3 flex items-center justify-between text-xs text-white/60">
+                      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4 rounded-3xl border border-white/10 bg-white/5 p-4">
+                  <div class="text-sm font-semibold">Insight</div>
+                  <div class="mt-2 text-sm text-white/70 leading-relaxed">
+                    You’re trending <span class="text-emeraldAcc font-semibold" id="trendDelta">-120 kcal</span> under target on average.
+                    Keep the streak alive by logging dinner early.
+                  </div>
+                </div>
+              </section>
+
+              <!-- Settings -->
+              <section class="w-1/4 h-full px-5 pb-28 overflow-y-auto no-scrollbar">
+                <div class="mt-2 rounded-3xl border border-white/10 bg-white/5 p-4">
+                  <div class="text-sm font-semibold">Profile</div>
+                  <div class="text-xs text-white/60">Adjust your baseline goals</div>
+
+                  <form id="settingsForm" class="mt-4 space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                      <label class="block">
+                        <div class="text-xs text-white/70">Weight (kg)</div>
+                        <input
+                          id="inWeight"
+                          type="number"
+                          inputmode="decimal"
+                          class="mt-2 w-full rounded-2xl bg-black/30 px-4 py-3 text-white ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-emeraldAcc/60"
+                        />
+                      </label>
+                      <label class="block">
+                        <div class="text-xs text-white/70">Height (cm)</div>
+                        <input
+                          id="inHeight"
+                          type="number"
+                          inputmode="decimal"
+                          class="mt-2 w-full rounded-2xl bg-black/30 px-4 py-3 text-white ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-emeraldAcc/60"
+                        />
+                      </label>
+                    </div>
+
+                    <label class="block">
+                      <div class="text-xs text-white/70">Daily Calorie Target</div>
+                      <input
+                        id="inTarget"
+                        type="number"
+                        inputmode="numeric"
+                        class="mt-2 w-full rounded-2xl bg-black/30 px-4 py-3 text-white ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-emeraldAcc/60"
+                      />
+                      <div class="mt-2 text-[11px] text-white/55">
+                        This updates your dashboard ring and analytics target line.
+                      </div>
+                    </label>
+
+                    <button
+                      type="submit"
+                      class="active:scale-95 transition transform w-full rounded-2xl bg-emeraldAcc px-4 py-3 text-slateDeep font-semibold shadow-[0_14px_40px_rgba(16,185,129,0.35)]"
+                    >
+                      Save Settings
+                    </button>
+                  </form>
+                </div>
+
+                <div class="mt-4 rounded-3xl border border-white/10 bg-white/5 p-4">
+                  <div class="text-sm font-semibold">App</div>
+                  <div class="mt-2 space-y-2 text-sm text-white/70">
+                    <div class="flex items-center justify-between">
+                      <span>Haptics</span>
+                      <span class="text-emeraldAcc font-semibold">Simulated</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span>Theme</span>
+                      <span class="text-white/70">Deep Slate</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span>Accent</span>
+                      <span class="text-emeraldAcc font-semibold">Emerald</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <!-- Bottom Tabs -->
+          <nav class="absolute inset-x-0 bottom-0 z-30 px-4 pb-5">
+            <div class="rounded-[26px] border border-white/10 bg-black/35 backdrop-blur-xl shadow-[0_20px_70px_rgba(0,0,0,0.55)]">
+              <div class="grid grid-cols-4 gap-1 p-2">
+                <button data-tab="dashboard" class="tabBtn active:scale-95 transition transform rounded-2xl px-3 py-3 text-center ring-1 ring-transparent">
+                  <div class="mx-auto mb-1 flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M4 10.5 12 4l8 6.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9.5Z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linejoin="round"
+                      />
+                      <path d="M9.5 22v-6.5h5V22" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                  <div class="text-[11px] font-semibold text-white/70">Home</div>
+                </button>
+                <button data-tab="scan" class="tabBtn active:scale-95 transition transform rounded-2xl px-3 py-3 text-center ring-1 ring-transparent">
+                  <div class="mx-auto mb-1 flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 3H6a3 3 0 0 0-3 3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M15 3h3a3 3 0 0 1 3 3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M9 21H6a3 3 0 0 1-3-3v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M15 21h3a3 3 0 0 0 3-3v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M12 8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                  <div class="text-[11px] font-semibold text-white/70">Scan</div>
+                </button>
+                <button data-tab="analytics" class="tabBtn active:scale-95 transition transform rounded-2xl px-3 py-3 text-center ring-1 ring-transparent">
+                  <div class="mx-auto mb-1 flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 20V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M10 20V4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M16 20v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M22 20V11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                  <div class="text-[11px] font-semibold text-white/70">Trends</div>
+                </button>
+                <button data-tab="settings" class="tabBtn active:scale-95 transition transform rounded-2xl px-3 py-3 text-center ring-1 ring-transparent">
+                  <div class="mx-auto mb-1 flex h-9 w-9 items-center justify-center rounded-2xl bg-white/5 ring-1 ring-white/10">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                      />
+                      <path
+                        d="M19.4 15a7.93 7.93 0 0 0 .05-1 7.93 7.93 0 0 0-.05-1l2-1.55a.6.6 0 0 0 .14-.77l-1.9-3.3a.6.6 0 0 0-.73-.26l-2.35.95a7.7 7.7 0 0 0-1.73-1l-.35-2.5A.6.6 0 0 0 13.9 2h-3.8a.6.6 0 0 0-.59.5l-.35 2.5a7.7 7.7 0 0 0-1.73 1l-2.35-.95a.6.6 0 0 0-.73.26l-1.9 3.3a.6.6 0 0 0 .14.77L4.6 13a7.93 7.93 0 0 0-.05 1c0 .34.02.67.05 1l-2 1.55a.6.6 0 0 0-.14.77l1.9 3.3a.6.6 0 0 0 .73.26l2.35-.95a7.7 7.7 0 0 0 1.73 1l.35 2.5a.6.6 0 0 0 .59.5h3.8a.6.6 0 0 0 .59-.5l.35-2.5a7.7 7.7 0 0 0 1.73-1l2.35.95a.6.6 0 0 0 .73-.26l1.9-3.3a.6.6 0 0 0-.14-.77L19.4 15Z"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                        stroke-linejoin="round"
+                        opacity="0.9"
+                      />
+                    </svg>
+                  </div>
+                  <div class="text-[11px] font-semibold text-white/70">Settings</div>
+                </button>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // ---------- State ----------
+      const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+      const fmt = (n) => Number(n).toLocaleString();
+      const $ = (id) => document.getElementById(id);
+      const qsa = (sel) => Array.from(document.querySelectorAll(sel));
+
+      const state = {
+        activeTab: "dashboard",
+        profile: { weightKg: 72, heightCm: 175 },
+        targets: {
+          calories: 2000,
+          proteinG: 140,
+          carbsG: 220,
+          fatsG: 70,
+        },
+        totals: {
+          foodCalories: 1200,
+          exerciseCalories: 300,
+          proteinG: 95,
+          carbsG: 135,
+          fatsG: 42,
+        },
+        meals: [
+          { id: "bfast", name: "Breakfast", subtitle: "Greek yogurt + berries", calories: 420, time: "08:12" },
+          { id: "lunch", name: "Lunch", subtitle: "Chicken salad bowl", calories: 780, time: "12:46" },
+        ],
+        scan: {
+          stage: "camera", // camera | scanning | result
+          scanTextIdx: 0,
+          scanTimer: null,
+          scanInterval: null,
+          fileName: "",
+          detectedMealName: "",
+          previewUrl: "",
+          lastProfile: null, // { mealName, calories, macros: {p,c,f} }
+        },
+        weekly: {
+          // mock, will be re-normalized vs target
+          days: [1840, 2025, 1710, 2100, 1950, 1880, 1760],
+        },
+      };
+
+      // ---------- Rendering ----------
+      function setHeaderTitle() {
+        const map = {
+          dashboard: "Dashboard",
+          scan: "AI Camera",
+          analytics: "Analytics",
+          settings: "Settings",
+        };
+        $("headerTitle").textContent = map[state.activeTab] ?? "Cal AI";
+      }
+
+      function renderMeals() {
+        const host = $("mealsList");
+        host.innerHTML = "";
+
+        state.meals.forEach((m) => {
+          const el = document.createElement("button");
+          el.className =
+            "active:scale-[0.99] transition transform w-full text-left rounded-2xl bg-black/25 ring-1 ring-white/10 px-4 py-3 hover:bg-black/30";
+          el.innerHTML = `
+            <div class="flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <div class="h-2.5 w-2.5 rounded-full bg-emeraldAcc shadow-[0_0_18px_rgba(16,185,129,0.55)]"></div>
+                  <div class="font-semibold truncate">${escapeHtml(m.name)}</div>
+                  <div class="text-[11px] text-white/50 shrink-0">${escapeHtml(m.time)}</div>
+                </div>
+                <div class="mt-1 text-sm text-white/65 truncate">${escapeHtml(m.subtitle ?? "")}</div>
+              </div>
+              <div class="shrink-0 rounded-2xl bg-emeraldAcc/15 px-3 py-2 ring-1 ring-emeraldAcc/30">
+                <div class="text-[10px] text-white/70">Calories</div>
+                <div class="text-sm font-semibold text-white">${fmt(m.calories)}</div>
+              </div>
+            </div>
+          `;
+          host.appendChild(el);
+        });
+      }
+
+      function renderRingAndTotals() {
+        const t = state.targets.calories;
+        const food = state.totals.foodCalories;
+        const exercise = state.totals.exerciseCalories;
+        const net = clamp(food - exercise, 0, 999999);
+        const remaining = Math.max(0, t - net);
+        const progress = clamp(net / Math.max(1, t), 0, 1);
+
+        $("txtTarget").textContent = fmt(t);
+        $("anaTarget").textContent = fmt(t);
+        $("txtFood").textContent = fmt(food);
+        $("txtFood2").textContent = fmt(food);
+        $("txtExercise").textContent = fmt(exercise);
+        $("txtRemaining").textContent = fmt(remaining);
+
+        const pct = Math.round(progress * 100);
+        $("txtProgressPct").textContent = `${pct}%`;
+        $("barCalories").style.width = `${pct}%`;
+
+        // ring
+        const circumference = 2 * Math.PI * 46; // r=46
+        const dash = circumference;
+        const offset = dash * (1 - progress);
+        const arc = $("ringArc");
+        arc.setAttribute("stroke-dasharray", dash.toFixed(0));
+        arc.setAttribute("stroke-dashoffset", offset.toFixed(0));
+
+        // analytics target line mapping (relative to max)
+        renderAnalytics();
+      }
+
+      function renderMacros() {
+        const { proteinG: pT, carbsG: cT, fatsG: fT } = state.targets;
+        const { proteinG: pV, carbsG: cV, fatsG: fV } = state.totals;
+
+        $("pTgt").textContent = fmt(pT);
+        $("cTgt").textContent = fmt(cT);
+        $("fTgt").textContent = fmt(fT);
+        $("pVal").textContent = fmt(pV);
+        $("cVal").textContent = fmt(cV);
+        $("fVal").textContent = fmt(fV);
+
+        $("pBar").style.width = `${Math.round(clamp(pV / Math.max(1, pT), 0, 1) * 100)}%`;
+        $("cBar").style.width = `${Math.round(clamp(cV / Math.max(1, cT), 0, 1) * 100)}%`;
+        $("fBar").style.width = `${Math.round(clamp(fV / Math.max(1, fT), 0, 1) * 100)}%`;
+      }
+
+      function renderAnalytics() {
+        const t = state.targets.calories;
+        const days = state.weekly.days;
+        const max = Math.max(t, ...days, 1);
+
+        const barsHost = $("bars");
+        barsHost.innerHTML = "";
+
+        days.forEach((val) => {
+          const h = Math.round((val / max) * 100);
+          const over = val > t;
+          const bar = document.createElement("div");
+          bar.className = "flex-1 min-w-0 flex flex-col justify-end";
+          bar.innerHTML = `
+            <div class="relative w-full rounded-2xl bg-white/5 ring-1 ring-white/10 overflow-hidden" style="height: 100%;">
+              <div class="absolute bottom-0 left-0 right-0 rounded-2xl ${
+                over ? "bg-white/25" : "bg-emeraldAcc/85"
+              }" style="height:${h}%;"></div>
+              <div class="absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.10),transparent)] opacity-30"
+                   style="animation: shimmer 1.6s linear infinite;"></div>
+            </div>
+          `;
+          barsHost.appendChild(bar);
+        });
+
+        // target line: y = (1 - t/max) * 100%
+        const y = (1 - t / max) * 100;
+        $("targetLine").style.top = `${clamp(y, 0, 100)}%`;
+
+        // trend delta mock
+        const avg = days.reduce((a, b) => a + b, 0) / days.length;
+        const delta = Math.round(avg - t);
+        $("trendDelta").textContent = `${delta >= 0 ? "+" : ""}${fmt(delta)} kcal`;
+        $("trendDelta").className = delta <= 0 ? "text-emeraldAcc font-semibold" : "text-white font-semibold";
+      }
+
+      function renderSettings() {
+        $("inWeight").value = state.profile.weightKg;
+        $("inHeight").value = state.profile.heightCm;
+        $("inTarget").value = state.targets.calories;
+      }
+
+      function renderScanStage() {
+        const s = state.scan.stage;
+        $("cameraStage").classList.toggle("hidden", s !== "camera");
+        $("scanStage").classList.toggle("hidden", s !== "scanning");
+        $("resultStage").classList.toggle("hidden", s !== "result");
+      }
+
+      function renderTabUI() {
+        const order = ["dashboard", "scan", "analytics", "settings"];
+        const idx = Math.max(0, order.indexOf(state.activeTab));
+        $("screenStack").style.transform = `translateX(-${idx * 25}%)`;
+
+        qsa(".tabBtn").forEach((btn) => {
+          const active = btn.dataset.tab === state.activeTab;
+          btn.classList.toggle("bg-white/5", active);
+          btn.classList.toggle("ring-white/10", active);
+          btn.classList.toggle("ring-transparent", !active);
+          const label = btn.querySelector("div.text-[11px]");
+          if (label) {
+            label.classList.toggle("text-white", active);
+            label.classList.toggle("text-white/70", !active);
+          }
+          const iconWrap = btn.querySelector("div.h-9.w-9");
+          if (iconWrap) {
+            iconWrap.classList.toggle("bg-emeraldAcc/15", active);
+            iconWrap.classList.toggle("ring-emeraldAcc/25", active);
+          }
+        });
+
+        setHeaderTitle();
+      }
+
+      function renderAll() {
+        renderMeals();
+        renderRingAndTotals();
+        renderMacros();
+        renderSettings();
+        renderScanStage();
+        renderTabUI();
+      }
+
+      // ---------- Actions ----------
+      function goTab(tab) {
+        state.activeTab = tab;
+        if (tab !== "scan") {
+          stopScanTimers();
+          state.scan.stage = "camera";
+          renderScanStage();
+        }
+        renderTabUI();
+      }
+
+      function stopScanTimers() {
+        if (state.scan.scanTimer) {
+          clearTimeout(state.scan.scanTimer);
+          state.scan.scanTimer = null;
+        }
+        if (state.scan.scanInterval) {
+          clearInterval(state.scan.scanInterval);
+          state.scan.scanInterval = null;
+        }
+      }
+
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function titleCase(s) {
+        return String(s)
+          .trim()
+          .replace(/\s+/g, " ")
+          .split(" ")
+          .filter(Boolean)
+          .map((w) => w.slice(0, 1).toUpperCase() + w.slice(1).toLowerCase())
+          .join(" ");
+      }
+
+      function foodNameFromFilename(fileName) {
+        if (!fileName) return "";
+        const base = String(fileName)
+          .replace(/^.*[\\/]/, "")
+          .replace(/\.[a-z0-9]+$/i, "")
+          .replace(/[_\-]+/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        return titleCase(base);
+      }
+
+      function pickMealName() {
+        const typed = $("scanMealNameInput")?.value?.trim() ?? "";
+        if (typed) return titleCase(typed);
+        if (state.scan.detectedMealName) return state.scan.detectedMealName;
+        if (state.scan.fileName) return foodNameFromFilename(state.scan.fileName) || "Mystery Meal";
+        return "Mystery Meal";
+      }
+
+      function caloriesFromMacros(macros) {
+        return macros.p * 4 + macros.c * 4 + macros.f * 9;
+      }
+
+      function buildMacrosToHitCalories({ targetCalories, proteinRange, fatRange, carbMin = 0 }) {
+        // choose protein + fat first, then compute carbs to match exactly
+        let p = randInt(proteinRange[0], proteinRange[1]);
+        let f = randInt(fatRange[0], fatRange[1]);
+
+        // If protein+fat already exceed target, downshift.
+        for (let i = 0; i < 10; i++) {
+          const used = p * 4 + f * 9;
+          if (used <= targetCalories - carbMin * 4) break;
+          p = Math.max(proteinRange[0], Math.floor(p * 0.85));
+          f = Math.max(fatRange[0], Math.floor(f * 0.85));
+        }
+
+        let remaining = targetCalories - (p * 4 + f * 9);
+        let c = Math.max(carbMin, Math.round(remaining / 4));
+
+        // lock exact total by adjusting carbs
+        let total = p * 4 + c * 4 + f * 9;
+        const diff = targetCalories - total; // typically in [-2..2] if rounding
+        if (diff !== 0) {
+          const dCarb = Math.round(diff / 4);
+          c = Math.max(carbMin, c + dCarb);
+        }
+        total = p * 4 + c * 4 + f * 9;
+
+        // If still off (because diff not divisible by 4), shift 1g protein where possible.
+        if (total !== targetCalories) {
+          const d = targetCalories - total;
+          if (Math.abs(d) <= 4) {
+            const dp = d / 4;
+            if (Number.isInteger(dp)) p = Math.max(0, p + dp);
+          }
+          total = p * 4 + c * 4 + f * 9;
+        }
+
+        // final: set calories to computed exact total (still sensible)
+        return { macros: { p: Math.max(0, p), c: Math.max(0, c), f: Math.max(0, f) }, calories: total };
+      }
+
+      function generateNutritionProfile(mealName) {
+        const text = String(mealName || "").toLowerCase();
+
+        // Heuristic buckets
+        if (/(pizza|pepperoni|margherita|slice)/.test(text)) {
+          const target = randInt(260, 340); // ~280 kcal per slice
+          const { macros, calories } = buildMacrosToHitCalories({
+            targetCalories: target,
+            proteinRange: [10, 18],
+            fatRange: [10, 18],
+            carbMin: 22,
+          });
+          return { mealName: titleCase(mealName), calories, macros, tag: "High carbs/fats • per slice" };
+        }
+
+        if (/(salad|apple|vegetable|veggie|greens|cucumber|tomato|berries)/.test(text)) {
+          const target = randInt(80, 150);
+          const { macros, calories } = buildMacrosToHitCalories({
+            targetCalories: target,
+            proteinRange: [2, 10],
+            fatRange: [1, 6],
+            carbMin: 10,
+          });
+          return { mealName: titleCase(mealName), calories, macros, tag: "Light • high fiber" };
+        }
+
+        if (/(chicken|egg|protein|turkey|tofu|salmon|tuna|whey|steak)/.test(text)) {
+          const target = randInt(300, 420);
+          const { macros, calories } = buildMacrosToHitCalories({
+            targetCalories: target,
+            proteinRange: [28, 55],
+            fatRange: [6, 18],
+            carbMin: 4,
+          });
+          return { mealName: titleCase(mealName), calories, macros, tag: "High protein" };
+        }
+
+        // Default: 200–600 kcal and macros that exactly sum to total calories.
+        const target = randInt(200, 600);
+        const { macros, calories } = buildMacrosToHitCalories({
+          targetCalories: target,
+          proteinRange: [15, 45],
+          fatRange: [6, 26],
+          carbMin: 8,
+        });
+        return { mealName: titleCase(mealName), calories, macros, tag: "Estimated" };
+      }
+
+      function renderAiResult(profile) {
+        if (!profile) return;
+        $("aiMealTitle").textContent = profile.mealName || "—";
+        $("aiKcal").textContent = fmt(profile.calories);
+        $("aiP").textContent = fmt(profile.macros.p);
+        $("aiC").textContent = fmt(profile.macros.c);
+        $("aiF").textContent = fmt(profile.macros.f);
+        $("aiPkcal").textContent = fmt(profile.macros.p * 4);
+        $("aiCkcal").textContent = fmt(profile.macros.c * 4);
+        $("aiFkcal").textContent = fmt(profile.macros.f * 9);
+
+        const conf = (0.86 + Math.random() * 0.11).toFixed(2);
+        $("aiMeta").textContent = `Confidence: ${conf} • Portion: 1 serving • ${profile.tag}`;
+      }
+
+      function startSimulatedScan() {
+        stopScanTimers();
+        state.scan.stage = "scanning";
+        state.scan.scanTextIdx = 0;
+        renderScanStage();
+
+        const steps = ["Analyzing food geometry...", "Identifying ingredients...", "Calculating macronutrient weights..."];
+        $("scanText").textContent = steps[0];
+        $("scanProg").style.width = "12%";
+
+        state.scan.scanInterval = setInterval(() => {
+          state.scan.scanTextIdx = (state.scan.scanTextIdx + 1) % steps.length;
+          $("scanText").textContent = steps[state.scan.scanTextIdx];
+        }, 1000);
+
+        // progress ramp
+        let p = 12;
+        const progTick = setInterval(() => {
+          p = clamp(p + Math.round(10 + Math.random() * 18), 0, 96);
+          $("scanProg").style.width = `${p}%`;
+          if (state.scan.stage !== "scanning") clearInterval(progTick);
+        }, 450);
+
+        state.scan.scanTimer = setTimeout(() => {
+          stopScanTimers();
+          const mealName = pickMealName();
+          const profile = generateNutritionProfile(mealName);
+          // Ensure calorie math is consistent
+          profile.calories = caloriesFromMacros(profile.macros);
+          state.scan.lastProfile = profile;
+          renderAiResult(profile);
+          state.scan.stage = "result";
+          $("scanProg").style.width = "100%";
+          renderScanStage();
+        }, 3000);
+      }
+
+      function logAiMealToDashboard() {
+        const profile = state.scan.lastProfile;
+        if (!profile) return;
+        const ai = {
+          name: profile.mealName,
+          calories: profile.calories,
+          macros: profile.macros,
+        };
+
+        state.totals.foodCalories += ai.calories;
+        state.totals.proteinG += ai.macros.p;
+        state.totals.carbsG += ai.macros.c;
+        state.totals.fatsG += ai.macros.f;
+
+        const now = new Date();
+        const hh = `${now.getHours()}`.padStart(2, "0");
+        const mm = `${now.getMinutes()}`.padStart(2, "0");
+
+        state.meals.push({
+          id: `ai-${Date.now()}`,
+          name: ai.name,
+          subtitle: `AI Scan • P ${ai.macros.p}g • C ${ai.macros.c}g • F ${ai.macros.f}g`,
+          calories: ai.calories,
+          time: `${hh}:${mm}`,
+        });
+
+        // keep weekly mock somewhat coherent
+        state.weekly.days[state.weekly.days.length - 1] = Math.min(
+          Math.round(state.weekly.days[state.weekly.days.length - 1] + ai.calories * 0.55),
+          3200
+        );
+
+        renderMeals();
+        renderRingAndTotals();
+        renderMacros();
+
+        // premium "success" micro-feedback: flash ring
+        const arc = $("ringArc");
+        arc.style.transition = "filter 180ms ease";
+        arc.style.filter = "url(#softGlow) drop-shadow(0 0 18px rgba(16,185,129,0.9))";
+        setTimeout(() => (arc.style.filter = "url(#softGlow)"), 400);
+
+        // hop back to dashboard
+        goTab("dashboard");
+      }
+
+      // ---------- Utilities ----------
+      function escapeHtml(s) {
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      // ---------- Wire up ----------
+      function init() {
+        const d = new Date();
+        $("txtDate").textContent = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+        qsa(".tabBtn").forEach((btn) => {
+          btn.addEventListener("click", () => goTab(btn.dataset.tab));
+        });
+
+        $("dashAddBtn").addEventListener("click", () => goTab("scan"));
+        $("mealsPlusBtn").addEventListener("click", () => goTab("scan"));
+        $("quickScanBtn").addEventListener("click", () => goTab("scan"));
+
+        $("scanChooseBtn").addEventListener("click", () => $("scanFileInput").click());
+        $("scanFileInput").addEventListener("change", (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          state.scan.fileName = file.name || "";
+          state.scan.detectedMealName = foodNameFromFilename(state.scan.fileName);
+          $("scanFileName").textContent = state.scan.fileName;
+
+          const hint = state.scan.detectedMealName
+            ? `Detected from filename: ${state.scan.detectedMealName} (you can override above)`
+            : "";
+          $("scanDetectedHint").textContent = hint;
+
+          // preview
+          if (state.scan.previewUrl) URL.revokeObjectURL(state.scan.previewUrl);
+          state.scan.previewUrl = URL.createObjectURL(file);
+          const img = $("scanPreviewImg");
+          img.src = state.scan.previewUrl;
+          img.classList.add("opacity-100");
+          $("scanPreviewEmpty").classList.add("hidden");
+        });
+
+        $("simulateScanBtn").addEventListener("click", startSimulatedScan);
+        $("confirmLogBtn").addEventListener("click", logAiMealToDashboard);
+        $("scanAgainBtn").addEventListener("click", () => {
+          stopScanTimers();
+          state.scan.stage = "camera";
+          renderScanStage();
+        });
+        $("scanBackToDash").addEventListener("click", () => goTab("dashboard"));
+
+        $("settingsForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const w = Number($("inWeight").value);
+          const h = Number($("inHeight").value);
+          const t = Number($("inTarget").value);
+          if (Number.isFinite(w) && w > 0) state.profile.weightKg = w;
+          if (Number.isFinite(h) && h > 0) state.profile.heightCm = h;
+          if (Number.isFinite(t) && t > 0) state.targets.calories = Math.round(t);
+          renderRingAndTotals();
+          // tiny "saved" feedback
+          const btn = $("settingsForm").querySelector("button[type='submit']");
+          btn.textContent = "Saved ✓";
+          setTimeout(() => (btn.textContent = "Save Settings"), 900);
+        });
+
+        // allow "Back" inside scan to feel instant
+        renderAll();
+      }
+
+      init();
+    </script>
+  </body>
+</html>
+
